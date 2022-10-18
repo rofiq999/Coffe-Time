@@ -1,6 +1,7 @@
-<div style="display: flex;
-    justify-content: center;
-    align-items: center;">
+<p align="center">
+  <img src="public\images\coffee time.png" width=300 alt="logo-icon" />
+  <h1 align='center'>Bujank Coffee Shop</h1>
+</p>
 
 # Coffee Timee
 
