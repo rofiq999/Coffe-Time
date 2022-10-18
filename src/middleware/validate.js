@@ -9,6 +9,9 @@ module.exports = {
       }
       req.body = newBody;
       next();
+      if (Object.keys(newBody).length === 0) return res.status(400).json({ msg: 'Nothing insert' });
+      // apakah setiap value sesuai dengan tipe data yang diinginkan
+      if (Object.keys(newBody).length !== allowedKeys.length) return res.status(400).json({ msg: 'input does not match key' });
     };
   },
 };
