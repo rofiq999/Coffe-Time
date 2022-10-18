@@ -1,14 +1,14 @@
 const express = require('express');
 
 const productRouter = express.Router();
+const isLogin = require('../middleware/isLogin');
+const uploadimages = require('../middleware/upload.js');
+const allowedRole = require('../middleware/allowedRole');
 
-const { get, create, edit, drop, search, sorth, filter } = require('../controler/controler.product.js');
+const { create, edit, drop, search } = require('../controler/product.js');
 
-productRouter.get('/', get);
-productRouter.get('/search', search);
-productRouter.get('/ascen', sorth);
-productRouter.get('/filter', filter);
-productRouter.post('/', create);
-productRouter.patch('/:id_product', edit);
-productRouter.delete('/:id_product', drop);
+productRouter.get('/', search);
+productRouter.post('/', isLogin(), allowedRole('admin'), uploadimages.single('image'), create);
+productRouter.patch('/:id', isLogin(), allowedRole('admin'), edit);
+productRouter.delete('/:id', isLogin(), allowedRole('admin'), drop);
 module.exports = productRouter;

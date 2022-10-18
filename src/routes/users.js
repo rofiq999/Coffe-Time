@@ -1,12 +1,14 @@
 const express = require('express');
 
 const usersRouter = express.Router();
-
-const { get, create, edit, drop } = require('../controler/controler.users');
+const allowedRole = require('../middleware/allowedRole');
+const isLogin = require('../middleware/isLogin');
+const { get, create, edit, drop, editPassword } = require('../controler/users');
 
 usersRouter.get('/', get);
 usersRouter.post('/', create);
-usersRouter.patch('/:id_user', edit);
-usersRouter.delete('/:id_user', drop);
+usersRouter.patch('/editPassword', isLogin(), editPassword);
+usersRouter.patch('/:id', isLogin(), allowedRole('user'), edit);
+usersRouter.delete('/:id', isLogin(), allowedRole('admin'), drop);
 
 module.exports = usersRouter;

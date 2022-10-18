@@ -2,7 +2,8 @@ const postgreDb = require('../config/postgre');
 
 const getTransactions = () => {
   return new Promise((resolve, reject) => {
-    const query = 'select * from transactions';
+    const query =
+      'select product.product_name, product.price, product.size, product.category, promo.code, promo.discount, users.display_name, users.addres, transactions.qty, transactions.shiping, transactions.tax, transactions.total, transactions.payment, transactions.status from transactions join product on transactions.product_id = product.id join promo on transactions.promo_id = promo.id join users on transactions.user_id = users.id';
     postgreDb.query(query, (err, result) => {
       if (err) {
         console.log(err);
@@ -15,10 +16,10 @@ const getTransactions = () => {
 
 const createTransactions = (body) => {
   return new Promise((resolve, reject) => {
-    const query = 'insert into transactions (id_product, id_voucher, id_user, quantity, subtotal, shiping, tax, total, payment, order_time) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)';
+    const query = 'insert into transactions (user_id, product_id, promo_id, qty, shiping, tax, total, payment, status) values ($1,$2,$3,$4,$5,$6,$7,$8,$9)';
     // for loop query += ",($5,$6,$7,$8)";
-    const { id_product, id_voucher, id_user, quantity, subtotal, shiping, tax, total, payment, order_time } = body;
-    postgreDb.query(query, [id_product, id_voucher, id_user, quantity, subtotal, shiping, tax, total, payment, order_time], (err, queryResult) => {
+    const { user_id, product_id, promo_id, qty, shiping, tax, total, payment, status } = body;
+    postgreDb.query(query, [user_id, product_id, promo_id, qty, shiping, tax, total, payment, status], (err, queryResult) => {
       if (err) {
         console.log(err);
         return reject(err);
@@ -34,8 +35,8 @@ const editTransactions = (body, params) => {
     const values = [];
     Object.keys(body).forEach((key, idx, array) => {
       if (idx === array.length - 1) {
-        query += `${key} = $${idx + 1} where id_transactions = $${idx + 2}`;
-        values.push(body[key], params.id_transactions);
+        query += `${key} = $${idx + 1} where id = $${idx + 2}`;
+        values.push(body[key], params.id);
         return;
       }
       query += `${key} = $${idx + 1},`;
@@ -55,10 +56,10 @@ const editTransactions = (body, params) => {
 
 const deleteTransactions = (params) => {
   return new Promise((resolve, reject) => {
-    const query = 'delete from transactions where id_transactions = $1';
+    const query = 'delete from transactions where id = $1';
     // OR => logika atau sql
     // "OR" => string OR
-    postgreDb.query(query, [params.id_transactions], (err, result) => {
+    postgreDb.query(query, [params.id], (err, result) => {
       if (err) {
         console.log(err);
         return reject(err);

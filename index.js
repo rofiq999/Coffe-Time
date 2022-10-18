@@ -14,7 +14,7 @@ postgreDB
     console.log('Database Connect');
     server.use(express.json());
     server.use(express.urlencoded({ extended: false }));
-
+    server.use(express.static('./public'));
     //semua request ke server didelegasikan ke mainRouter
     server.use(mainRouter);
     //server siap menerima request di port

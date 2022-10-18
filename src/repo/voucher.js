@@ -14,9 +14,9 @@ const getvoucher = () => {
 };
 const createvoucher = (body) => {
   return new Promise((resolve, reject) => {
-    const query = 'insert into promo ( id_product, nama_voucher, minimal_price, maximal_price, start_voucher, end_voucher, discount, describe) values ($1,$2,$3,$4,$5,$6,$7,$8)';
-    const { id_product, nama_voucher, minimal_price, maximal_price, start_voucher, end_voucher, discount, describe } = body;
-    postgreDb.query(query, [id_product, nama_voucher, minimal_price, maximal_price, start_voucher, end_voucher, discount, describe], (err, queryResult) => {
+    const query = 'insert into promo ( product_id, code, valid, discount) values ($1,$2,$3,$4)';
+    const { product_id, code, valid, discount } = body;
+    postgreDb.query(query, [product_id, code, valid, discount], (err, queryResult) => {
       if (err) {
         console.log(err);
         return reject(err);
@@ -31,8 +31,8 @@ const editvoucher = (body, params) => {
     const values = [];
     Object.keys(body).forEach((key, idx, array) => {
       if (idx === array.length - 1) {
-        query += `${key} = $${idx + 1} where id_voucher = $${idx + 2}`;
-        values.push(body[key], params.id_voucher);
+        query += `${key} = $${idx + 1} where id = $${idx + 2}`;
+        values.push(body[key], params.id);
         return;
       }
       query += `${key} = $${idx + 1},`;
@@ -51,10 +51,10 @@ const editvoucher = (body, params) => {
 };
 const deletevoucher = (params) => {
   return new Promise((resolve, reject) => {
-    const query = 'delete from promo where id_voucher = $1';
+    const query = 'delete from promo where id = $1';
     // OR => logika atau sql
     // "OR" => string OR
-    postgreDb.query(query, [params.id_voucher], (err, result) => {
+    postgreDb.query(query, [params.id], (err, result) => {
       if (err) {
         console.log(err);
         return reject(err);
@@ -65,8 +65,8 @@ const deletevoucher = (params) => {
 };
 const searchvoucher = (queryParams) => {
   return new Promise((resolve, reject) => {
-    const query = 'select * from promo where lower(nama_voucher) like lower($1) order by id_voucher asc ';
-    const values = [`%${queryParams.nama_voucher}%`];
+    const query = 'select * from promo where lower(code) like lower($1) order by id asc ';
+    const values = [`%${queryParams.code}%`];
     postgreDb.query(query, values, (err, queryResult) => {
       if (err) {
         console.log(err);
