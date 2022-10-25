@@ -32,18 +32,19 @@ const createUsers = (body) => {
     });
   });
 };
-const editUsers = (body, params) => {
+const editUsers = (body, token) => {
   return new Promise((resolve, reject) => {
     let query = 'update users set ';
     const values = [];
     Object.keys(body).forEach((key, idx, array) => {
       if (idx === array.length - 1) {
-        query += `${key} = $${idx + 1} where id = $${idx + 2}`;
-        values.push(body[key], params.id);
+        query += `${key} = $${idx + 1} where id = $${idx + 2} returning id, display_name, gender, addres, image`;
+        values.push(body[key], token);
         return;
       }
       query += `${key} = $${idx + 1},`;
       values.push(body[key]);
+      console.log(values);
     });
     postgreDb
       .query(query, values)
@@ -56,11 +57,11 @@ const editUsers = (body, params) => {
       });
   });
 };
-const editPassword = (body) => {
+const editPassword = (body, token) => {
   return new Promise((resolve, reject) => {
-    const { old_password, new_password, user_id } = body;
+    const { old_password, new_password } = body;
     const getPwdQuery = 'select password from users where id = $1';
-    const getPwdValues = [user_id];
+    const getPwdValues = [token];
     postgreDb.query(getPwdQuery, getPwdValues, (err, response) => {
       if (err) {
         console.log(err);
@@ -83,7 +84,7 @@ const editPassword = (body) => {
             return reject({ err });
           }
           const editPwdQuery = 'update users set password = $1 where id = $2';
-          const editPwdValues = [newHashedPassword, user_id];
+          const editPwdValues = [newHashedPassword, token];
           postgreDb.query(editPwdQuery, editPwdValues, (err, response) => {
             if (err) {
               console.log(err);

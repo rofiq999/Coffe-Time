@@ -2,7 +2,7 @@ const postgreDb = require('../config/postgre');
 
 const createProduct = (body, file) => {
   return new Promise((resolve, reject) => {
-    const query = 'insert into product (product_name, price, stock, size, category, image, description) values ($1,$2,$3,$4,$5,$6,$7)';
+    const query = 'insert into product (product_name, price, stock, size, category, image, description) values ($1,$2,$3,$4,$5,$6,$7) returning *';
     const { product_name, price, stock, size, category, description } = body;
     postgreDb.query(query, [product_name, price, stock, size, category, file, description], (err, queryResult) => {
       if (err) {
@@ -20,7 +20,7 @@ const editProduct = (body, params) => {
     const values = [];
     Object.keys(body).forEach((key, idx, array) => {
       if (idx === array.length - 1) {
-        query += `${key} = $${idx + 1} where id = $${idx + 2}`;
+        query += `${key} = $${idx + 1} where id = $${idx + 2} returning *`;
         values.push(body[key], params.id);
         return;
       }
@@ -60,7 +60,7 @@ const searchProduct = (queryparams) => {
 
     // Search name product
     if (queryparams.search) {
-      query += `where lower(product_name) like lower('%${queryparams.search}%')`;
+      query += `where lower(product_name) like lower('%${queryparams.search}%1')`;
     }
 
     // Filter category

@@ -7,7 +7,6 @@ module.exports = (...allowedRole) => {
       isAllowed = true;
       break;
     }
-    console.log(payload.role);
     if (!isAllowed) return res.status(403).json({ msg: 'Forbidden', data: null });
     next();
   };

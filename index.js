@@ -1,6 +1,6 @@
 const express = require('express');
 const server = express();
-
+const morgan = require('morgan');
 const PORT = 7070;
 
 //import database yang ada
@@ -15,6 +15,7 @@ postgreDB
     server.use(express.json());
     server.use(express.urlencoded({ extended: false }));
     server.use(express.static('./public'));
+    server.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
     //semua request ke server didelegasikan ke mainRouter
     server.use(mainRouter);
     //server siap menerima request di port

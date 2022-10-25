@@ -26,7 +26,11 @@ const create = async (req, res) => {
 };
 const edit = async (req, res) => {
   try {
-    const response = await repoUsers.editUsers(req.body, req.params);
+    if (req.file) {
+      req.body.image = req.file.path;
+    }
+    const response = await repoUsers.editUsers(req.body, req.userPayload.user_id);
+    response.rows[0].image = `/images/${req.file.filename}`;
     sendResponse.success(res, 200, {
       msg: 'edit succes',
       data: response.rows,
@@ -37,7 +41,7 @@ const edit = async (req, res) => {
 };
 const editPassword = async (req, res) => {
   try {
-    const response = await repoUsers.editPassword(req.body);
+    const response = await repoUsers.editPassword(req.body, req.userPayload.user_id);
     sendResponse.success(res, 200, {
       msg: (response.text = 'Password has been changed'),
       data: null,
