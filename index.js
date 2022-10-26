@@ -1,4 +1,6 @@
 const express = require('express');
+require('dotenv').config();
+require('./src/config/redis');
 const server = express();
 const morgan = require('morgan');
 const PORT = 7070;

@@ -7,7 +7,7 @@ const allowedRole = require('../middleware/allowedRole');
 const { get, create, edit, drop } = require('../controler/transactions');
 
 transactionstRouter.get('/', get);
-transactionstRouter.post('/', isLogin(), allowedRole('admin'), create);
+transactionstRouter.post('/', isLogin(), allowedRole('admin', 'user'), create);
 transactionstRouter.patch('/:id', isLogin(), allowedRole('admin'), edit);
 transactionstRouter.delete('/:id', isLogin(), allowedRole('admin'), drop);
 

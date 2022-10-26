@@ -54,52 +54,124 @@ const deleteProduct = (params) => {
   });
 };
 
-const searchProduct = (queryparams) => {
+const searchProduct = (queryparams, hostAPI) => {
   return new Promise((resolve, reject) => {
     let query = 'select product.*, promo.code, promo.discount from product full join promo on promo.product_id = product.id ';
+
+    let queryLimit = '';
+    let link = `${hostAPI}/coffe_time/product/?`;
 
     // Search name product
     if (queryparams.search) {
       query += `where lower(product_name) like lower('%${queryparams.search}%1')`;
+      link += `product_name=${queryparams.search}&`;
     }
 
     // Filter category
     if (queryparams.category) {
       if (queryparams.search) {
         query += `and lower(category) like lower('${queryparams.category}')`;
+        link += `category=${queryparams.category}&`;
       } else {
         query += `where lower(category) like lower('${queryparams.category}')`;
+        link += `category=${queryparams.category}&`;
       }
     }
 
     if (queryparams.sort == 'low') {
       query += 'order by price asc';
+      link += `sort=${queryparams.sort}&`;
     }
     if (queryparams.sort == 'high') {
       query += 'order by price desc';
+      link += `sort=${queryparams.sort}&`;
     }
     if (queryparams.sort == 'newest') {
       query += 'order by created_at asc';
+      link += `sort=${queryparams.sort}&`;
     }
     if (queryparams.sort == 'lates') {
       query += 'order by created_at desc';
+      link += `sort=${queryparams.sort}&`;
     }
     if (queryparams.sort == 'favorite') {
       query = 'select product.*, transactions.quantity from product inner join transactions on transactions.product_id = product.id order by transactions.quantity desc';
+      link += `sort=${queryparams.sort}&`;
     }
 
-    const page = Number(queryparams.page);
-    const limit = Number(queryparams.limit);
-    const offset = (page - 1) * limit;
-    query += ` limit ${limit} offset ${offset}`;
+    // const page = Number(queryparams.page);
+    // const limit = Number(queryparams.limit);
+    // const offset = (page - 1) * limit;
+    // query += ` limit ${limit} offset ${offset}`;
 
+    let values = [];
+    if (queryparams.page && queryparams.limit) {
+      let page = parseInt(queryparams.page);
+      let limit = parseInt(queryparams.limit);
+      let offset = (page - 1) * limit;
+      queryLimit = query + ` limit $1 offset $2`;
+      values.push(limit, offset);
+    } else {
+      queryLimit = query;
+    }
     postgreDb.query(query, (err, result) => {
-      if (err) {
-        console.log(err);
-        return reject(err);
-      }
-      return resolve(result);
+      postgreDb.query(queryLimit, values, (err, queryresult) => {
+        if (err) {
+          console.log(err);
+          return reject(err);
+        }
+        console.log(queryresult);
+        console.log(queryLimit);
+        if (queryresult.rows.length == 0) return reject(new Error('Product Not Found'));
+        let resNext = null;
+        let resPrev = null;
+        if (queryparams.page && queryparams.limit) {
+          let page = parseInt(queryparams.page);
+          let limit = parseInt(queryparams.limit);
+          let start = (page - 1) * limit;
+          let end = page * limit;
+          let next = '';
+          let prev = '';
+          const dataNext = Math.ceil(result.rowCount / limit);
+          if (start <= result.rowCount) {
+            next = page + 1;
+          }
+          if (end > 0) {
+            prev = page - 1;
+          }
+          if (parseInt(next) <= parseInt(dataNext)) {
+            resNext = `${link}page=${next}&limit=${limit}`;
+          }
+          if (parseInt(prev) !== 0) {
+            resPrev = `${link}page=${prev}&limit=${limit}`;
+          }
+          let sendResponse = {
+            dataCount: result.rowCount,
+            next: resNext,
+            prev: resPrev,
+            totalPage: Math.ceil(result.rowCount / limit),
+            data: queryresult.rows,
+          };
+          return resolve(sendResponse);
+        }
+        let sendResponse = {
+          dataCount: result.rowCount,
+          next: resNext,
+          prev: resPrev,
+          totalPage: null,
+          data: queryresult.rows,
+        };
+        return resolve(sendResponse);
+      });
     });
+
+    // postgreDb.query(query, (err, result) => {
+    //   if (err) {
+    //     console.log(err);
+    //     return reject(err);
+    //   }
+    //   return resolve(result);
+    // });
   });
 };
 // const searchProduct = (queryParams) => {

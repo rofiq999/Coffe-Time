@@ -1,9 +1,12 @@
 const bcrypt = require('bcrypt');
+const JWTR = require('jwt-redis').default;
+const client = require('../config/redis');
 const db = require('../config/postgre');
 const jwt = require('jsonwebtoken');
 module.exports = {
   login: (body) => {
     return new Promise((resolve, reject) => {
+      const jwtr = new JWTR(client);
       const { email, password } = body;
       const getPasswordByEmailQuery = 'SELECT id, email, password, role FROM users WHERE email = $1';
       const getPasswordByEmailValues = [email];
@@ -31,22 +34,44 @@ module.exports = {
             role: response.rows[0].role,
             email,
           };
-          jwt.sign(
-            payload,
-            process.env.SECRET_KEY,
-            {
+          jwtr
+            .sign(payload, process.env.SECRET_KEY, {
               expiresIn: '5m',
               issuer: process.env.ISSUER,
-            },
-            (err, token) => {
-              if (err) {
-                console.log(err);
-                return reject({ err });
-              }
-              return resolve({ token, name: payload.name });
-            }
-          );
+            })
+            .then((token) => {
+              // Token verification
+              const sendRespon = {
+                token: token,
+                email: payload.email,
+              };
+              return resolve(sendRespon);
+            });
+          // jwt.sign(
+          //   payload,
+          //   process.env.SECRET_KEY,
+          //   {
+          //     expiresIn: '5m',
+          //     issuer: process.env.ISSUER,
+          //   },
+          //   (err, token) => {
+          //     if (err) {
+          //       console.log(err);
+          //       return reject({ err });
+          //     }
+          //     return resolve({ token, name: payload.name });
+          //   }
+          // );
         });
+      });
+    });
+  },
+  logout: (token) => {
+    return new Promise((resolve, reject) => {
+      const jwtr = new JWTR(client);
+      jwtr.destroy(token.jti).then((res) => {
+        if (!res) reject(new Error('Login First'));
+        resolve();
       });
     });
   },

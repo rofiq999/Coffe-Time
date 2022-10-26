@@ -48,14 +48,13 @@ const drop = async (req, res) => {
 };
 const search = async (req, res) => {
   try {
-    const response = await productRepo.searchProduct(req.query);
+    const hostApi = `${req.protocol}://${req.hostname}:7070`;
+    const response = await productRepo.searchProduct(req.query, hostApi);
     res.status(200).json({
-      result: response.rows,
+      result: response,
     });
   } catch (error) {
-    res.status(500).json({
-      msg: 'Internal server Error',
-    });
+    sendResponse.error(res, 500, error.message);
   }
 };
 
