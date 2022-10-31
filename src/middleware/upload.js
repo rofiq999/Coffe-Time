@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const suffix = Date.now() + '-' + Math.round(Math.random() * 1e3);
     const ext = path.extname(file.originalname);
-    const filename = `${file.fieldname}${suffix}${ext}`;
+    const filename = `${file.fieldname}-${suffix}${ext}`;
     cb(null, filename);
   },
 });
@@ -18,9 +18,9 @@ const upload = multer({
     if (file.mimetype == 'image/png' || file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg') {
       cb(null, true);
     } else {
-      return cb(new Error('Invalid file type'));
+      return cb(new Error('Format image must png, jpg or jpeg!'));
     }
   },
-  limits: { fileSize: 4e6 },
+  limits: { fileSize: 2e6 },
 });
 module.exports = upload;
