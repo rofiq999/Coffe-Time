@@ -15,7 +15,7 @@ function uploadFile(req, res, next) {
       res.json('Size image minimum 4mb');
     } else if (err) {
       // Error File format
-      res.json('Format image Wrong!');
+      res.json(err.message);
     }
     next();
   });

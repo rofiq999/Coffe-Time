@@ -6,10 +6,14 @@ const sendResponse = require('../helper/response');
 
 const create = async (req, res) => {
   try {
-    const response = await productRepo.createProduct(req.body, req.file.filename);
-    sendResponse.success(res, 200, {
-      msg: 'Create Product Success',
-      data: response.rows,
+    const response = await productRepo.createProduct(req.body, (req.file.filename = `/image/${req.file.filename}`));
+
+    // response.rows[0].image = `/images/${req.file.filename}`;
+    sendResponse.success(res, 201, {
+      result: {
+        msg: 'Product created successfully.',
+        data: response.rows,
+      },
     });
   } catch (err) {
     console.log(err);
@@ -20,12 +24,14 @@ const create = async (req, res) => {
 const edit = async (req, res) => {
   try {
     if (req.file) {
-      req.body.image = `${req.file.filename}`;
+      req.body.image = `/image/${req.file.filename}`;
     }
     const response = await productRepo.editProduct(req.body, req.params);
-    sendResponse.success(res, 200, {
-      msg: 'Edit Data Success',
-      data: response.rows,
+    sendResponse.success(res, 201, {
+      result: {
+        msg: 'Product has ben changed',
+        data: response.rows,
+      },
     });
   } catch (err) {
     sendResponse.error(res, 500, 'Internal Server Error');
