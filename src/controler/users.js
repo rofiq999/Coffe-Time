@@ -27,10 +27,10 @@ const create = async (req, res) => {
 const edit = async (req, res) => {
   try {
     if (req.file) {
-      req.body.image = req.file.path;
+      req.body.image = `/image/${req.file.filename}`;
     }
     const response = await repoUsers.editUsers(req.body, req.userPayload.user_id);
-    response.rows[0].image = `/images/${req.file.filename}`;
+    // response.rows[0].image = `/images/${req.file.filename}`;
     sendResponse.success(res, 200, {
       msg: 'edit succes',
       data: response.rows,
