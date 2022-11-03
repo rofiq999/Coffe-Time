@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const JWTR = require('jwt-redis').default;
 const client = require('../config/redis');
 const db = require('../config/postgre');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 module.exports = {
   login: (body) => {
     return new Promise((resolve, reject) => {
@@ -43,7 +43,7 @@ module.exports = {
               // Token verification
               const sendRespon = {
                 token: token,
-                email: payload.email,
+                payload,
               };
               return resolve(sendRespon);
             });

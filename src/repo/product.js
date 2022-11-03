@@ -63,7 +63,7 @@ const searchProduct = (queryparams, hostAPI) => {
 
     // Search name product
     if (queryparams.search) {
-      query += `where lower(product_name) like lower('%${queryparams.search}%1')`;
+      query += `where lower(product_name) like lower('%${queryparams.search}%')`;
       link += `product_name=${queryparams.search}&`;
     }
 
