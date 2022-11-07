@@ -26,14 +26,24 @@ const create = async (req, res) => {
 };
 const edit = async (req, res) => {
   try {
+    // if (req.file) {
+    //   req.body.image = `/image/${req.file.filename}`;
+    // }
+    let url = req.file.url;
+    let image = `/${req.file.public_id}.${req.file.format}`;
     if (req.file) {
-      req.body.image = `/image/${req.file.filename}`;
+      // req.file.filename = `/images/${req.file.filename}`;
+      image;
+      url;
     }
-    const response = await repoUsers.editUsers(req.body, req.userPayload.user_id);
+    // const response = await repoUsers.editUsers(req.body, req.userPayload.user_id);
     // response.rows[0].image = `/images/${req.file.filename}`;
+    const response = await repoUsers.editUsers(req.body, req.userPayload.user_id((req.body.image = req.file.url)));
     sendResponse.success(res, 200, {
       msg: 'edit succes',
       data: response.rows,
+      filename: image,
+      url,
     });
   } catch (err) {
     sendResponse.error(res, 500, 'Internal Server Error');
