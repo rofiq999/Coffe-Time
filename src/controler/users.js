@@ -41,21 +41,22 @@ const edit = async (req, res) => {
     // if (req.file) {
     //   req.body.image = `/image/${req.file.filename}`;
     // }
-    let url = req.file.url;
-    let image = `/${req.file.public_id}.${req.file.format}`;
+    // let url = req.file.url;
+    // let image = `/${req.file.public_id}.${req.file.format}`;
     if (req.file) {
       // req.file.filename = `/images/${req.file.filename}`;
-      image;
-      url;
+      // image;
+      // url;
+      req.body.image = req.file.secure_url;
     }
     // const response = await repoUsers.editUsers(req.body, req.userPayload.user_id);
     // response.rows[0].image = `/images/${req.file.filename}`;
-    const response = await repoUsers.editUsers(req.body, req.userPayload.user_id((req.body.image = req.file.url)));
+    const response = await repoUsers.editUsers(req.body, req.userPayload.user_id);
     sendResponse.success(res, 200, {
       msg: 'edit succes',
       data: response.rows,
-      filename: image,
-      url,
+      // filename: image,
+      // url,
     });
   } catch (err) {
     sendResponse.error(res, 500, 'Internal Server Error');
