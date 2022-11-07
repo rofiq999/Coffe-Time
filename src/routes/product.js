@@ -25,7 +25,7 @@ function uploadFile(req, res, next) {
 const { create, edit, drop, search, getId } = require('../controler/product.js');
 
 productRouter.get('/', search);
-productRouter.get('/id', isLogin(), allowedRole('admin', 'user'), getId);
+productRouter.get('/:id', isLogin(), allowedRole('admin', 'user'), getId);
 productRouter.post('/', isLogin(), allowedRole('admin'), uploadFile, cloudinaryUploader, create);
 productRouter.patch('/:id', isLogin(), allowedRole('admin'), uploadFile, cloudinaryUploader, edit);
 productRouter.delete('/:id', isLogin(), allowedRole('admin'), drop);
