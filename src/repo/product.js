@@ -176,6 +176,19 @@ const searchProduct = (queryparams, hostAPI) => {
     // });
   });
 };
+
+const getIdProduct = (params) => {
+  return new Promise((resolve, reject) => {
+    const query = 'select * from product where id = $1';
+    postgreDb.query(query, [params.id], (err, queryResult) => {
+      if (err) {
+        console.log(err);
+        return reject(err);
+      }
+      return resolve(queryResult);
+    });
+  });
+};
 // const searchProduct = (queryParams) => {
 //   return new Promise((resolve, reject) => {
 //     const query = 'select * from product where lower(name_product) like lower($1) order by id_product asc ';
@@ -237,6 +250,7 @@ const repoProduct = {
   editProduct,
   deleteProduct,
   searchProduct,
+  getIdProduct,
   // searchProduct,
   // shorthProduct,
   // filterProduct,

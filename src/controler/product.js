@@ -76,11 +76,23 @@ const search = async (req, res) => {
   }
 };
 
+const getId = async (req, res) => {
+  try {
+    const response = await productRepo.getIdProduct(req.params);
+    sendResponse.success(res, 202, {
+      data: response.rows,
+    });
+  } catch (err) {
+    sendResponse.error(res, 500, 'Internal Server Error');
+  }
+};
+
 const productControler = {
   create,
   search,
   edit,
   drop,
+  getId,
 };
 
 module.exports = productControler;
