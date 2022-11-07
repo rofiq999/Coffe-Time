@@ -36,7 +36,7 @@ module.exports = {
           };
           jwtr
             .sign(payload, process.env.SECRET_KEY, {
-              expiresIn: '5m',
+              expiresIn: '1h',
               issuer: process.env.ISSUER,
             })
             .then((token) => {
