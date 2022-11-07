@@ -27,7 +27,7 @@ const { get, create, edit, drop, editPassword } = require('../controler/users');
 usersRouter.get('/', get);
 usersRouter.post('/', validate.body('email', 'password', 'phone_number'), create);
 usersRouter.patch('/editPassword', isLogin(), allowedRole('user', 'admin'), uploadFile, editPassword);
-usersRouter.patch('/', isLogin(), allowedRole('user'), uploadimages.single('image'), edit);
+usersRouter.patch('/', isLogin(), allowedRole('user'), uploadFile, edit);
 usersRouter.delete('/:id', isLogin(), allowedRole('admin'), drop);
 
 module.exports = usersRouter;

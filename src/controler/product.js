@@ -5,14 +5,21 @@ const sendResponse = require('../helper/response');
 // GET data
 
 const create = async (req, res) => {
+  console.log(req.body);
+  console.log(req.file);
   try {
-    const response = await productRepo.createProduct(req.body, (req.file.filename = `/image/${req.file.filename}`));
-
-    // response.rows[0].image = `/images/${req.file.filename}`;
+    if (req.file) {
+      // response.rows[0].image = `/images/${req.file.filename}`;
+      var image = `/${req.file.public_id}.${req.file.format}`;
+    }
+    // const response = await productRepo.createProduct(req.body, (req.file.filename = `/image/${req.file.filename}`));
+    const response = await productRepo.createProduct(req.body, req.file.url);
     sendResponse.success(res, 201, {
       result: {
         msg: 'Product created successfully.',
         data: response.rows,
+        filename: image,
+        url: req.file.url,
       },
     });
   } catch (err) {
@@ -23,14 +30,22 @@ const create = async (req, res) => {
 
 const edit = async (req, res) => {
   try {
+    // if (req.file) {
+    //   req.body.image = `/image/${req.file.filename}`;
+    // }
+
     if (req.file) {
-      req.body.image = `/image/${req.file.filename}`;
+      var image = `/${req.file.public_id}.${req.file.format}`;
+      var url = req.file.url;
     }
-    const response = await productRepo.editProduct(req.body, req.params);
+    // const response = await productRepo.editProduct(req.body, req.params);
+    const response = await productRepo.editProduct(req.body, req.params, (req.body.image = req.file.url));
     sendResponse.success(res, 201, {
       result: {
         msg: 'Product has ben changed',
         data: response.rows,
+        filename: image,
+        url,
       },
     });
   } catch (err) {

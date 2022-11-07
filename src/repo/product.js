@@ -2,8 +2,8 @@ const postgreDb = require('../config/postgre');
 
 const createProduct = (body, file) => {
   return new Promise((resolve, reject) => {
-    const query = 'insert into product (product_name, price, stock, size, category, image, description) values ($1,$2,$3,$4,$5,$6,$7) returning *';
     const { product_name, price, stock, size, category, description } = body;
+    const query = 'insert into product (product_name, price, stock, size, category, image, description) values ($1,$2,$3,$4,$5,$6,$7) returning *';
     postgreDb.query(query, [product_name, price, stock, size, category, file, description], (err, queryResult) => {
       if (err) {
         console.log(err);

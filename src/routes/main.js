@@ -11,6 +11,9 @@ const authRouter = require('./auth');
 const prefix = '/coffe_time';
 
 //import middleware
+const { memoryUpload, errorHandler } = require('../middleware/upload');
+// diskUpload,
+const cloudinaryUploader = require('../middleware/cloudinary');
 // const imageUpload = require('../middleware/upload');
 
 //menayambungkan main router ke sub router
@@ -24,6 +27,31 @@ mainRouter.use(`${prefix}/voucher`, voucherRouter);
 mainRouter.get('/', (req, res) => {
   res.json({
     msg: 'sudah berjalan dan berhasil',
+  });
+});
+
+mainRouter.post(
+  '/cloud',
+  (req, res, next) =>
+    memoryUpload.single('image')(req, res, (err) => {
+      errorHandler(err, res, next);
+    }),
+  cloudinaryUploader,
+  (req, res) => {
+    console.log(req.file);
+    res.status(200).json({
+      msg: 'Upload Succes',
+      data: {
+        url: req.file.url,
+        secure: req.file.secure_url,
+        data: req.file.filename,
+      },
+    });
+  }
+);
+mainRouter.get(`/`, (req, res) => {
+  res.json({
+    msg: `Deploy Conected Succes`,
   });
 });
 

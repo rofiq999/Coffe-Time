@@ -1,21 +1,22 @@
 const express = require('express');
 const multer = require('multer');
+const cloudinaryUploader = require('../middleware/cloudinary');
 
 const productRouter = express.Router();
 const isLogin = require('../middleware/isLogin');
-const uploadimages = require('../middleware/upload.js');
+// const uploadimages = require('../middleware/upload.js');
 const allowedRole = require('../middleware/allowedRole');
-
+const { memoryUpload } = require('../middleware/upload');
+// diskUpload,
 function uploadFile(req, res, next) {
-  const upload = uploadimages.single('image');
-
-  upload(req, res, function (err) {
+  memoryUpload.single('image')(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
-      res.json('Size image minimum 4mb');
+      // res.json('Size image minimum 4mb');
+      return res.status(400).json({ msg: err.message });
     } else if (err) {
       // Error File format
-      res.json(err.message);
+      return res.json({ msg: err.message });
     }
     next();
   });
@@ -24,7 +25,7 @@ function uploadFile(req, res, next) {
 const { create, edit, drop, search } = require('../controler/product.js');
 
 productRouter.get('/', search);
-productRouter.post('/', isLogin(), allowedRole('admin'), uploadFile, create);
-productRouter.patch('/:id', isLogin(), allowedRole('admin'), uploadFile, edit);
+productRouter.post('/', isLogin(), allowedRole('admin'), uploadFile, cloudinaryUploader, create);
+productRouter.patch('/:id', isLogin(), allowedRole('admin'), uploadFile, cloudinaryUploader, edit);
 productRouter.delete('/:id', isLogin(), allowedRole('admin'), drop);
 module.exports = productRouter;
