@@ -1,5 +1,5 @@
 const express = require('express');
-const cloudinaryUploader = require('../middleware/cloudinary');
+const cloudinaryUploader = require('../middleware/cloudinaryUser');
 const multer = require('multer');
 
 const usersRouter = express.Router();
@@ -23,9 +23,10 @@ function uploadFile(req, res, next) {
   });
 }
 
-const { get, create, edit, drop, editPassword } = require('../controler/users');
+const { create, edit, drop, editPassword, getId } = require('../controler/users');
 
-usersRouter.get('/', get);
+// usersRouter.get('/', get);
+usersRouter.get('/', isLogin(), allowedRole('user', 'admin'), getId);
 usersRouter.post('/', validate.body('email', 'password', 'phone_number'), create);
 usersRouter.patch('/editPassword', isLogin(), allowedRole('user', 'admin'), editPassword);
 usersRouter.patch('/', isLogin(), allowedRole('user'), uploadFile, cloudinaryUploader, edit);

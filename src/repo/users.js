@@ -111,8 +111,22 @@ const deleteUsers = (params) => {
     });
   });
 };
+const getIdUsers = (token) => {
+  return new Promise((resolve, reject) => {
+    const query = 'select * from users where id = $1 ';
+    postgreDb.query(query, [token], (err, result) => {
+      if (err) {
+        console.log(err);
+        return reject(err);
+      }
+      return resolve(result);
+    });
+  });
+};
+
 const repousers = {
   getUsers,
+  getIdUsers,
   createUsers,
   editPassword,
   editUsers,

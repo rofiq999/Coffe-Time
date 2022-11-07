@@ -13,6 +13,18 @@ const get = async (req, res) => {
     });
   }
 };
+const getId = async (req, res) => {
+  try {
+    console.log(req.userPayload.id);
+    const response = await repoUsers.getIdUsers(req.userPayload.user_id);
+    sendResponse.success(res, 200, {
+      result: response.rows,
+    });
+  } catch (err) {
+    sendResponse.error(res, 500, 'Server Internal Error');
+  }
+};
+
 const create = async (req, res) => {
   try {
     const response = await repoUsers.createUsers(req.body);
@@ -75,6 +87,7 @@ const drop = async (req, res) => {
 };
 const UsersControler = {
   get,
+  getId,
   create,
   edit,
   editPassword,
