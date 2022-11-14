@@ -33,7 +33,7 @@ const create = async (req, res) => {
       data: response.rows,
     });
   } catch (err) {
-    sendResponse.error(res, 500, err.details);
+    sendResponse.error(res, 500, err.message);
   }
 };
 const edit = async (req, res) => {

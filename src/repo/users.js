@@ -16,22 +16,38 @@ const createUsers = (body) => {
   return new Promise((resolve, reject) => {
     const query = 'insert into users ( email, password, phone_number) values ($1,$2,$3) returning id,email';
     const { email, password, phone_number } = body;
-    bcrypt.hash(password, 10, (err, hashedPassword) => {
-      if (err) {
-        console.log(err);
-        return reject(err);
+    const validasiEmail = `select email from users where email like $1`;
+    const validasiPhone = `select phone_number from users where phone_number like $1`;
+    postgreDb.query(validasiEmail, [email], (err, resEmail) => {
+      if (err) return reject(err);
+      if (resEmail.rows.length > 0) {
+        return reject(new Error('Email already used'));
       }
-      postgreDb.query(query, [email, hashedPassword, phone_number], (err, queryResult) => {
-        console.log(query);
-        if (err) {
-          console.log(err);
-          return reject(err);
+      postgreDb.query(validasiPhone, [phone_number], (err, resPhone) => {
+        if (err) return reject(err);
+        if (resPhone.rows.length > 0) {
+          return reject(new Error('Number already used'));
         }
-        resolve(queryResult);
+
+        bcrypt.hash(password, 10, (err, hashedPassword) => {
+          if (err) {
+            console.log(err);
+            return reject(err);
+          }
+          postgreDb.query(query, [email, hashedPassword, phone_number], (err, queryResult) => {
+            console.log(query);
+            if (err) {
+              console.log(err);
+              return reject(err);
+            }
+            resolve(queryResult);
+          });
+        });
       });
     });
   });
 };
+
 const editUsers = (body, token) => {
   return new Promise((resolve, reject) => {
     let query = 'update users set ';
