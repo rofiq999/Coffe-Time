@@ -5,8 +5,8 @@ const sendResponse = require('../helper/response');
 // GET data
 
 const create = async (req, res) => {
-  console.log(req.body);
-  console.log(req.file);
+  // console.log(req.body);
+  // console.log(req.file);
   try {
     if (req.file) {
       // response.rows[0].image = `/images/${req.file.filename}`;
